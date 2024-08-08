@@ -1,0 +1,162 @@
+{% load static %}
+{% load i18n %}
+{% load currency %}
+<header>
+    <!-- top Header -->
+    <div id="top-header">
+        <div class="container">
+            <div class="pull-left">
+                <span>{% trans "Welcome to E-shop!" %}</span>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{message.tags}}" role="alert">
+                            {{ message |safe }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="pull-right">
+                <ul class="header-top-links">
+                    <li><a href="#">{% trans "Store" %}</a></li>
+                    <li><a href="#">{% trans "Newsletter" %}</a></li>
+                   
+                    <li class="dropdown default-dropdown">
+                     
+                            <input name="next" type="hidden" value="{{ redirect_to }}">
+                            <select name="language">
+                                {% get_current_language as LANGUAGE_CODE %}
+                                {% get_available_languages as LANGUAGES %}
+                                {% get_language_info_list for LANGUAGES as languages %}
+                                {% for language in languages %}
+                                    <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                                        {{ language.name_local }} ({{ language.code }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit">{% trans "Set" %}</button>
+                            <noscript>
+                                <input type="submit" value="Set" />
+                            </noscript>
+                        </form>
+                    </li>
+
+                    <li class="dropdown default-dropdown">
+                        
+                            {% csrf_token %}
+                            <select name="currency" onchange="submit()">
+                                {% for curr in CURRENCIES %}
+                                    <option value="{{ curr.code }}">{{ curr.symbol }} {{ curr.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit">{% trans "Set" %}</button>
+                            <noscript>
+                                <input type="submit" value="Set" />
+                            </noscript>
+                        </form>
+                    </li>
+
+                    <li class="dropdown default-dropdown">
+                      
+                            {% csrf_token %}
+                            <input type="submit" value="{% trans 'Save' %}" />
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /top Header -->
+
+    <!-- header -->
+    <div id="header">
+        <div class="container">
+            <div class="pull-left">
+                <!-- Logo -->
+                <div class="header-logo">
+                    <a class="logo" href="{% url 'home' %}">
+                        <img src="{% static 'img/logo.png' %}" alt="">
+                    </a>
+                </div>
+                <!-- /Logo -->
+                <script>
+                    $(function() {
+                        $("#query").autocomplete({
+                            source: "/search_auto/",
+                            select: function (event, ui) {
+                                AutoCompleteSelectHandler(event, ui)
+                            },
+                            minLength: 2,
+                        });
+                    });
+                    function AutoCompleteSelectHandler(event, ui)
+                    {
+                        var selectedObj = ui.item;
+                    }
+                </script>
+
+                <!-- Search -->
+                <div class="header-search">
+                    <form action="/search/" method="post">
+                        {% csrf_token %}
+                        <input id="query" name="query" class="input search-input" type="text" placeholder="{% trans 'Enter your keyword' %}">
+                        <select name="catid" class="input search-categories">
+                            <option value="0">{% trans "All Categories" %}</option>
+                        </select>
+                        <button class="search-btn" type="submit"><i class="fa fa-search"></i></button>
+                    </form>
+                </div>
+                <!-- /Search -->
+
+            </div>
+            <div class="pull-right">
+                <ul class="header-btns">
+                    <!-- Account -->
+                    <li class="header-account dropdown default-dropdown">
+                        {% if user.id is not None %}
+                            <div class="dropdown-toggle" role="button" data-toggle="dropdown" aria-expanded="true">
+                                <div class="header-btns-icon">
+                                    <img src="{{ request.session.userimage }}" style="height: 40px; border-radius: 30%">
+                                </div>
+                                <strong class="text-uppercase">{{ user.first_name }} <i class="fa fa-caret-down"></i></strong>
+                            </div>
+                        {% else %}
+                            
+                        {% endif %}
+
+                        <ul class="custom-menu">
+                           
+                            <li><a href="#"><i class="fa fa-heart-o"></i> {% trans "My Favorits" %}</a></li>
+                            <li><a href="{% url 'user_orders' %}"><i class="fa fa-exchange"></i> {% trans "My Orders " %}</a></li>
+                            
+                            <li><a href="{% url 'logout' %}"><i class="fa fa-unlock-alt"></i> {% trans "Logout" %}</a></li>
+                        </ul>
+                    </li>
+                    <!-- /Account -->
+
+                    <!-- Cart -->
+                    <li class="header-cart dropdown default-dropdown">
+                      
+                            <div class="header-btns-icon">
+                                <i class="fa fa-shopping-cart"></i>
+                                {% load myapptags %}
+                                <span class="qty">{{ count }}</span>
+                            </div>
+                            <strong class="text-uppercase">{% trans "My Cart:" %}</strong>
+                        </a>
+                    </li>
+                    <!-- /Cart -->
+
+                    <!-- Mobile nav toggle-->
+                    <li class="nav-toggle">
+                        <button class="nav-toggle-btn main-btn icon-btn"><i class="fa fa-bars"></i></button>
+                    </li>
+                    <!-- / Mobile nav toggle -->
+                </ul>
+            </div>
+        </div>
+        <!-- header -->
+    </div>
+    <!-- container -->
+</header>
+<!-- /HEADER -->
